@@ -1,0 +1,168 @@
+import os
+import asyncio
+import sys
+sys.path.insert(-1,r"D:\pypy\Agents")
+from dotenv import load_dotenv
+load_dotenv()
+from Utils.helpers import *
+from langsmith import utils
+utils.tracing_is_enabled()
+from bs4 import BeautifulSoup
+from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig, CacheMode
+from crawl4ai.extraction_strategy import LLMExtractionStrategy
+from playwright.sync_api import sync_playwright
+from pydantic import BaseModel, Field
+from typing import Annotated
+
+from langchain_core.tools import tool
+from openai import OpenAI
+from langgraph.prebuilt import create_react_agent
+
+@tool
+def search_and_extract(
+    url: Annotated[str,"The url that need to be read and extract information."]
+):
+    """This function is used to crawl all the href that link to the articles of this site if this site contains many articles.
+    Request and get the content of the page. 
+    Extract the all the hrefs """
+    
+    print("##### Crawling data #######")
+    html_content = request_url(url)
+        
+    soup = BeautifulSoup(html_content, "html.parser")
+    hrefs = [(a.get_text(strip = True), a.get("href")) for a in soup.find_all("a") if a.get("href")]
+    clean_texts = [text.strip() +"  link: "+ href.strip() for text,href in hrefs if text.strip()]
+    final_text = "\n".join(clean_texts)    
+    client = OpenAI()
+    print("######## Processing #######")
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        temperature=0.1,
+        messages=[
+            {"role": "assistant", "content": "You are my assistant that help me extract the right information that I need."},
+            {
+                "role": "user",
+                "content": f"""
+                    Here is the data I crawl from web, I filterd it and just get the content of the site.
+                    I need you extract for me in the exactly way the information I need.
+                    Extract all the name, the href that link to the article, and the date when article posted.
+                    I just need you return for 3 latest articles.
+                    You should read the name and decide that it is the name of article or not. If not, do not extract.
+                    You have to return the information in json type, DO NOT return anything else.
+                    The keys of json are: 'name','href','date_posted'
+                    Here is the text I need you extract:
+                    {final_text}
+                    """
+            }
+        ],
+    )
+    json_string = response.choices[0].message.content
+    # print(json_string)
+    
+    return process_json(json_string)
+
+# class Item(BaseModel):
+#     # name: Annotated[str,"the name of the News"]
+#     # href: Annotated[str,"The href that link to the News"]
+#     # time_post:Annotated[str,"The time that news posted"]
+#     content:str
+# # @tool
+# async def Read_and_extract_infor(
+#     url:Annotated[str,"The url link to the article"]
+#                            ):
+#     """This function is write to extract and summary main information of a article."""
+#     llm_strategy = LLMExtractionStrategy(
+#         provider="openai/gpt-4o-mini",            # e.g. "ollama/llama2"
+#         api_token=os.getenv('OPENAI_API_KEY'),
+#         schema=Item.model_json_schema(),            # Or use model_json_schema()
+#         extraction_type="schema",
+#         instruction="Read and Retrieve the information(just read the text, do not read html code), after that"
+#         " summary the main content in an short essay of that page for me",
+#         # chunk_token_threshold=3000,
+#         # overlap_rate=0,
+#         apply_chunking=False,
+#         input_format="html",   # or "html", "fit_markdown"
+#         extra_args={"max_tokens": 2000}
+#     )
+#     crawl_config = CrawlerRunConfig(
+#         extraction_strategy=llm_strategy,
+#         cache_mode=CacheMode.BYPASS,
+#         wait_for = "js:() => window.loaded === true"
+        
+#     )
+    
+#     browser_cfg = BrowserConfig(headless=True)
+    
+
+#     async with AsyncWebCrawler(config=browser_cfg) as crawler:
+#         # 4. Let's say we want to crawl a single page
+#         result = await crawler.arun(
+#             url=url,
+#             config=crawl_config
+#         )
+
+#         if result.success:
+#             # 5. The extracted content is presumably JSON
+#             data = result.extracted_content
+#             print("Extracted items:", data)
+#             # print(result.html)
+
+#             # 6. Show usage stats
+#             llm_strategy.show_usage()  # prints token usage
+#         else:
+#             print("Error:", result.error_message)
+
+@tool
+def extract(
+    url:Annotated[str,"The url of article that needed to be extract information"]
+    ):
+    
+    
+    """
+    This function is used for extract and retrieve the information from raw text from an article
+    """
+    print("##### Crawling data #######")
+    html_content = request_url(url)
+        
+    soup = BeautifulSoup(html_content, "html.parser")
+    texts = soup.find_all(text=True)
+    clean_texts = [text.strip() for text in texts if text.strip()]
+    final_text = "\n".join(clean_texts)    
+    client = OpenAI()
+    print("######## Processing #######")
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        temperature=0.1,
+        max_tokens=500,
+        messages=[
+            {"role": "assistant", "content": "You are my assistant that help me retrieve the main content of articles"},
+            {
+                "role": "user",
+                "content": f"""
+                    Here is the data I crawl from web, I filterd it and just get the content of the site.
+                    I need you retrieve for me in the main content of the article in a short paragraph.
+                    This article is a raw html that I filterd and get text only.
+                    Retrieve and summary the main content of this article in a short essay(about 500 words).
+                    Here is the text I need you retrieve:
+                    {final_text}
+                    """
+            }
+        ],
+    )
+    res = response.choices[0].message.content
+    # print(json_string)
+    
+    return res
+            
+            
+def create_agent(llm,tools):
+    research_agent = create_react_agent(
+    llm, tools=tools, prompt="You are a researcher. DO NOT do any math.",name="researcher")
+    return research_agent
+
+if __name__=="__main__":
+    # print(search_and_extract("https://blog.injective.com/"))
+    print(extract("https://blog.injective.com/introducing-the-new-injective-ambassador-program/"))
+        
+        
+
