@@ -26,7 +26,7 @@ def search_and_extract(
     Request and get the content of the page. 
     Extract the all the hrefs """
     
-    print("##### Crawling data #######")
+    print("##### Crawling data href #######")
     html_content = request_url(url)
         
     soup = BeautifulSoup(html_content, "html.parser")
@@ -34,9 +34,9 @@ def search_and_extract(
     clean_texts = [text.strip() +"  link: "+ href.strip() for text,href in hrefs if text.strip()]
     final_text = "\n".join(clean_texts)    
     client = OpenAI()
-    print("######## Processing #######")
+    print("######## Processing href #######")
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         temperature=0.1,
         messages=[
             {"role": "assistant", "content": "You are my assistant that help me extract the right information that I need."},
