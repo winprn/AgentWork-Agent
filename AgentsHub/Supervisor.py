@@ -8,7 +8,7 @@ from langgraph.types import Command
 from langchain_core.messages import HumanMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import create_react_agent
-from Crawl_news_agent import *
+# from Crawl_news_agent import *
 
 
 class State(MessagesState):
@@ -35,12 +35,13 @@ class Agent:
     
     def node(self):
         agent = self.agent
+        name = self.name
         def agent_node(state: State) -> Command[Literal["supervisor"]]:
             result = agent.invoke(state)
             return Command(
             update={
                 "messages": [
-                    HumanMessage(content=result["messages"][-1].content, name="researcher")
+                    HumanMessage(content=result["messages"][-1].content, name=name)
                 ]
             },
             goto="supervisor",
@@ -67,6 +68,7 @@ class Supervise_graph():
     f" following workers: {self.member_names}. Given the following user request,"
     " respond with the worker to act next. Each worker will perform a"
     " task and respond with their results and status."
+    "if the input do not contain any tasks, you can response to user and finish"
 )
         if prompt is None or len(prompt) == 0:
             self.prompt = default_promt
@@ -123,16 +125,16 @@ class Supervise_graph():
                 print(s)
                 print("----")
         else:
-            print(self.graph.invoke({"messages": [("user", 
+            a = self.graph.invoke({"messages": [("user", 
                             request)]}, subgraphs=True
-                ))
-                    
+            )
+            return a
 
 
 if __name__=="__main__":
     llm = ChatOpenAI(model = "gpt-4o-mini")
-    a1 = Agent(name="crawler",description="",tools=[search_and_extract],prompts="You are an researcher, use some tools to search and crawl some useful information",llm=llm)
-    a2 = Agent(name="reporter",description="",tools=[],prompts="You are a reporter. Summary the content and give me the report",llm=llm)
+    a1 = Agent(name="crawler",description="",tools=[],prompts="You are an researcher, use some tools to search and crawl some useful information",llm=llm)
+    a2 = Agent(name="Content creater",description="",tools=[],prompts="You are a Content creater. According to the content that was extracted, write for me a post that summary all the news. Then, save that post to my computer",llm=llm)
     a3 = Agent(name="reader",description="",tools=[],prompts="You are a reader, read the content in a specifice url and summary it.",llm=llm)
     agents = [a1,a2,a3]
     super_graph = Supervise_graph(llm=llm,
@@ -145,7 +147,8 @@ if __name__=="__main__":
         print(type(super_graph.member_nodes[i]))
     request = """
     This url links to a block that contains many artiles. I need you crawl and summary the information from latest articles of that site.
-    After that, summary and write for me a report.
+    After that, summary and write for me a report. You need to crawll all the href first, then visit them to find the information.
+    after that, save the summary to my computer
     This is the url: https://blog.injective.com/
     """
     super_graph.make_request(request,stream=False)  

@@ -49,7 +49,7 @@ def search_and_extract(
                     I just need you return for 3 latest articles.
                     You should read the name and decide that it is the name of article or not. If not, do not extract.
                     You have to return the information in json type, DO NOT return anything else.
-                    The keys of json are: 'name','href','date_posted'
+                    The keys of json are: 'href','date_posted'
                     Here is the text I need you extract:
                     {final_text}
                     """
@@ -57,60 +57,9 @@ def search_and_extract(
         ],
     )
     json_string = response.choices[0].message.content
-    # print(json_string)
     
     return process_json(json_string)
 
-# class Item(BaseModel):
-#     # name: Annotated[str,"the name of the News"]
-#     # href: Annotated[str,"The href that link to the News"]
-#     # time_post:Annotated[str,"The time that news posted"]
-#     content:str
-# # @tool
-# async def Read_and_extract_infor(
-#     url:Annotated[str,"The url link to the article"]
-#                            ):
-#     """This function is write to extract and summary main information of a article."""
-#     llm_strategy = LLMExtractionStrategy(
-#         provider="openai/gpt-4o-mini",            # e.g. "ollama/llama2"
-#         api_token=os.getenv('OPENAI_API_KEY'),
-#         schema=Item.model_json_schema(),            # Or use model_json_schema()
-#         extraction_type="schema",
-#         instruction="Read and Retrieve the information(just read the text, do not read html code), after that"
-#         " summary the main content in an short essay of that page for me",
-#         # chunk_token_threshold=3000,
-#         # overlap_rate=0,
-#         apply_chunking=False,
-#         input_format="html",   # or "html", "fit_markdown"
-#         extra_args={"max_tokens": 2000}
-#     )
-#     crawl_config = CrawlerRunConfig(
-#         extraction_strategy=llm_strategy,
-#         cache_mode=CacheMode.BYPASS,
-#         wait_for = "js:() => window.loaded === true"
-        
-#     )
-    
-#     browser_cfg = BrowserConfig(headless=True)
-    
-
-#     async with AsyncWebCrawler(config=browser_cfg) as crawler:
-#         # 4. Let's say we want to crawl a single page
-#         result = await crawler.arun(
-#             url=url,
-#             config=crawl_config
-#         )
-
-#         if result.success:
-#             # 5. The extracted content is presumably JSON
-#             data = result.extracted_content
-#             print("Extracted items:", data)
-#             # print(result.html)
-
-#             # 6. Show usage stats
-#             llm_strategy.show_usage()  # prints token usage
-#         else:
-#             print("Error:", result.error_message)
 
 @tool
 def extract(
@@ -153,7 +102,21 @@ def extract(
     # print(json_string)
     
     return res
-            
+
+@tool
+def save_report(
+    text:Annotated[str,"The text that needed to be saved"],
+    path:Annotated[str,"The file name in txt format"]):
+    
+    """
+    Use this to save the generated report to txt
+    """
+    try:
+        with open(path,"w") as file:
+            file.write(text)
+        return "Save succes"
+    except:
+        return "failed to save"
             
 def create_agent(llm,tools):
     research_agent = create_react_agent(
