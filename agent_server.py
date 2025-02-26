@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import sys
-sys.path.insert(-1,r"D:\pypy\Agents")
+sys.path.insert(-1,r"..\..\*")
 from Agent_team_2.WriteReport import *
 from Agent_team_1.CodeWeb import *
 

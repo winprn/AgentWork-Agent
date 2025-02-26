@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0,r"D:\pypy\Agents")
+sys.path.insert(0,r"..\..\*")
 
 from AgentsHub.Supervisor import *
 from AgentsHub.Crawl_news_agent import *

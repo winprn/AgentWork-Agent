@@ -1,7 +1,7 @@
 import os
 import asyncio
 import sys
-sys.path.insert(-1,r"D:\pypy\Agents")
+sys.path.insert(-1,r"..\..\Agents")
 from dotenv import load_dotenv
 import requests
 load_dotenv()
@@ -61,14 +61,31 @@ def save_imgs(
     """
     Use this function to save image that generated from url in the specific path.
     """
-    try:
-        res = requests.get(url).content
-        os.makedirs(root_folder,exist_ok=True)
-        with open(os.path.join(root_folder,image_name),"wb") as file:
-            file.write(res)
-        return f"Save succes image in {os.path(root_folder,image_name)}"
-    except Exception as e:
-        return e
+    file_name = os.path.join(root_folder,image_name)
+    response = requests.get(url, stream=True)
+    if response.status_code == 200:
+        with open(file_name, 'wb') as file:
+            for chunk in response.iter_content(1024):
+                file.write(chunk)
+        print(f"Ảnh đã được lưu tại {file_name}")
+    else:
+        print(f"Không thể tải ảnh. Mã lỗi: {response.status_code}")
+    
+@tool
+def find_image_path(
+    path:Annotated[str,"The relative path of root folder that contains the project"]
+):
+    """
+    Use this function to find the path link to the image that need for coding.
+    All the images are saved in the workspace with the semantic name.
+    """
+    paths = []
+    image_extensions = ['jpg','png']
+    for root,_,files in os.walk(path):
+        for file_name in files:
+            if file_name[-3:] in image_extensions:
+                paths.append(files)
+    return paths
 @tool
 def search_and_extract(
     url: Annotated[str,"The url that need to be read and extract information."]
