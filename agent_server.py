@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 import sys
 sys.path.insert(-1,r"D:\pypy\Agents")
-from Agent_team_2.main import *
+from Agent_team_2.WriteReport import *
+from Agent_team_1.CodeWeb import *
+
 from pydantic import BaseModel
 
 class body(BaseModel):
@@ -10,16 +12,12 @@ class body(BaseModel):
 
 app = FastAPI()
 
-graph_team_2 = main()
-graph_team_1 = main()
+graph_team_2 = create_report_team()
+graph_team_1 = create_software_team()
 
 job_list = {"1":graph_team_1,
             "2":graph_team_2}
-request = """
-    This url links to a block that contains many artiles. I need you crawl and summary the information from latest articles of that site.
-    After that, summary and write for me a report that can summary all the information. After that save it.
-    This is the url: https://blog.injective.com/
-    """
+
 
 @app.get('/{id}')
 async def index(id):

@@ -3,13 +3,13 @@ import asyncio
 import sys
 sys.path.insert(-1,r"D:\pypy\Agents")
 from dotenv import load_dotenv
+import requests
 load_dotenv()
 from Utils.helpers import *
 from langsmith import utils
 utils.tracing_is_enabled()
 from bs4 import BeautifulSoup
-from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig, CacheMode
-from crawl4ai.extraction_strategy import LLMExtractionStrategy
+
 from playwright.sync_api import sync_playwright
 from pydantic import BaseModel, Field
 from typing import Annotated
@@ -32,7 +32,43 @@ def save_code(
 		return "success"
 	except Exception as e:
 		return e
+@tool
+def gen_imgs(
+	description: Annotated[str,"The description of the image"]
+	):
+	"""Use this to call api to Dall E model to generate image. The result is return in URL, you can check it by visit the url"""
+	prompt = f"Generate a image that is suitable fo this description {description}"
+	client = OpenAI()
 
+	response = client.images.generate(
+	model="dall-e-3",
+	prompt=prompt,
+	n=1,
+	size="1024x1024",
+    quality="standard",
+	)
+	image_url = response.data[0].url
+
+
+	return f"Here is the url of the images: {image_url}"
+
+@tool
+def save_imgs(
+    url:Annotated[str,"the url of the images that generated from Dall-e"],
+    image_name:Annotated[str,"the name that the image should be save"],
+    root_folder:Annotated[str,"the root folder of project"]
+):
+    """
+    Use this function to save image that generated from url in the specific path.
+    """
+    try:
+        res = requests.get(url).content
+        os.makedirs(root_folder,exist_ok=True)
+        with open(os.path.join(root_folder,image_name),"wb") as file:
+            file.write(res)
+        return f"Save succes image in {os.path(root_folder,image_name)}"
+    except Exception as e:
+        return e
 @tool
 def search_and_extract(
     url: Annotated[str,"The url that need to be read and extract information."]

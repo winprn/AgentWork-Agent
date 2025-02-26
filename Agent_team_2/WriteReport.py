@@ -5,7 +5,7 @@ from AgentsHub.Supervisor import *
 from AgentsHub.Crawl_news_agent import *
 from langchain_openai import ChatOpenAI
 
-def main():
+def create_report_team():
     llm = ChatOpenAI(model = "gpt-4o-mini")
     crawler = Agent(name="Crawler",
                     description="",
