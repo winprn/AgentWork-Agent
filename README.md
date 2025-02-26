@@ -23,7 +23,26 @@ pip install -r requirements.txt
 To start the supervisor graph, run the following command:
 
 ```bash
-python main.py
+uvicorn agent_server:app
+```
+
+It will run on localhost.
+If you want to run Demo1, make POST with body like this:
+
+```
+{
+"id":"1",
+"request":"Your request"
+}
+```
+
+If you want to run Demo2:
+
+```
+{
+"id":"2",
+"request":"Your request"
+}
 ```
 
 ## Contributing

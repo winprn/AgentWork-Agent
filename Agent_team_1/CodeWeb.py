@@ -22,6 +22,7 @@ def create_software_team():
                     prompts="""You are a Designer. Your responsibility is generating  some images
                     for Dev to code web. You have to just return the image url. After that, you save the image 
                     in the specific path and provide the path for developer by using save_imgs function.
+                    You need to provide exactly path to the images for Developer
                     """,
                     tools = [gen_imgs,save_imgs],
                     llm = llm)
@@ -29,7 +30,8 @@ def create_software_team():
     Dev = Agent(name="Developer",
                     description="",
                     prompts="""You are a developer that can code Front end.
-                    You can use some resource from Designer images agents (path of image that need for web)
+                    You can use some resource from Designer images agents (path of image that need for web).
+                    If you need some images, you have to use the paths that provided from Designer in the exactly way.
                     and some boosttrap and tailwind from researcher. 
                     You just only return code. Save code(donot ask anything to user).
                     """,

@@ -27,4 +27,4 @@ async def index(id):
 
 @app.post('/invoke')
 async def invoke(req:body):
-    return {'hello':job_list[req.id].make_request(req.request)}
+    return {'output':job_list[req.id].make_request(req.request)}
