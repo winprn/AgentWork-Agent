@@ -1,0 +1,27 @@
+I need to develop a UI website to provide information about flights and the airline's services. Additionally, customers should be able to book tickets through the Airline website.
+
+Customer Features
+    *View general information and details about flights.
+    *Search for flights.
+    *Book tickets (no online payment integration required).
+    *Cancel tickets within the allowed cancellation period.
+    *Track information about booked flights.
+Admin Features
+    *Publish information (introductions, promotions, announcements, news, etc.) about the airline.
+    *Input data about aircraft (ID, manufacturer, seat details, etc.).
+    *Input data about flights (flight number, aircraft, departure point, destination, departure time, etc.).
+    *View and generate reports on customer ticket bookings.
+    *Modify departure times (delay flights) if necessary.
+NOTES
+    *Refer to airline websites to better understand business functions.
+    *Creatively design QAirline’s unique brand identity.
+    *Just develop the interface of this website using HTML, CSS or other framework like React … (not *include backend).
+Please create a landing page to introduce the website .
+
+REMEMBER THAT:
+    You just use html and css. You can use internet and find some suitable boostrap or tailwind.
+    This Web need the logo and background image
+    CSS need to responsive and dynamic
+    The main color is blue and have summer vibes.
+    You must implement all the features above.
+    After generate code,you need to save the code and all resource to this folder: Qairline

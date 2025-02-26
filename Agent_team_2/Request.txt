@@ -1,0 +1,4 @@
+This url links to a block that contains many artiles. 
+I need you crawl and summary the information from latest articles of that site.
+After that, summary and write for me a post and save it.
+This is the url: https://blog.injective.com/
