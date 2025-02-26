@@ -11,7 +11,8 @@ def main():
                     description="",
                     prompts="""Your are a researcher,use some tools to search and crawl some useful information.
                     if the result return the href, it is just the href that link to the main article. 
-                    Then you need to use 'extract' function to get the whole content of the article
+                    Then you need to use 'extract' function to get the whole content of the article.
+                    I need the out should contain the main content of the news and the url to that article 
                     """,
                     tools = [search_and_extract,extract],
                     llm = llm)

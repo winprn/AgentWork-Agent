@@ -19,6 +19,21 @@ from openai import OpenAI
 from langgraph.prebuilt import create_react_agent
 
 @tool
+def save_code(
+	code:Annotated[str,"Extract the code in the response of AI then save them in the directory "],
+	directory: Annotated[str,"the root directory folder that the code is saved,"],
+	file_name: Annotated[str,"name of file save code with suitable extension of file_name"]
+):
+	"""Use this to make new folder and save code into right psoition of that folder."""
+	os.makedirs(directory,exist_ok=True)
+	try:
+		with open(os.path.join(directory,file_name),"w") as file:
+			file.write(code)
+		return "success"
+	except Exception as e:
+		return e
+
+@tool
 def search_and_extract(
     url: Annotated[str,"The url that need to be read and extract information."]
 ):
