@@ -27,6 +27,7 @@ uvicorn agent_server:app
 ```
 
 It will run on localhost.
+
 If you want to run Demo1, make POST with body like this:
 
 ```
@@ -44,15 +45,3 @@ If you want to run Demo2:
 "request":"Your request"
 }
 ```
-
-## Contributing
-
-We welcome contributions! Please fork the repository and submit pull requests.
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
-
-## Contact
-
-For any questions or feedback, please contact [your email](mailto:youremail@example.com).
