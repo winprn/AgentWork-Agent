@@ -14,7 +14,7 @@ To install the project, clone the repository and install the required dependenci
 
 ```bash
 git clone https://github.com/yourusername/supervisor-graph-agents.git
-cd supervisor-graph-agents
+cd AgentWork-Agent
 pip install -r requirements.txt
 ```
 
@@ -29,6 +29,9 @@ uvicorn agent_server:app
 It will run on localhost.
 
 If you want to run Demo1, make POST with body like this:
+```
+requests.post("http://127.0.0.1:8000/invoke",body={"id":"1", "request":"Your request"})
+```
 
 ```
 {
@@ -45,3 +48,5 @@ If you want to run Demo2:
 "request":"Your request"
 }
 ```
+
+For the request, You can find them in Agent_team_1, Agen_team_2
