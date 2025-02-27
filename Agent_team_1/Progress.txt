@@ -1,0 +1,68 @@
+I need to develop a UI website to provide information about flights and the airline's services. Additionally, customers should be able to book tickets through the Airline website.
+
+Customer Features
+    *View general information and details about flights.
+    *Search for flights.
+    *Book tickets (no online payment integration required).
+    *Cancel tickets within the allowed cancellation period.
+    *Track information about booked flights.
+Admin Features
+    *Publish information (introductions, promotions, announcements, news, etc.) about the airline.
+    *Input data about aircraft (ID, manufacturer, seat details, etc.).
+    *Input data about flights (flight number, aircraft, departure point, destination, departure time, etc.).
+    *View and generate reports on customer ticket bookings.
+    *Modify departure times (delay flights) if necessary.
+NOTES
+    *Refer to airline websites to better understand business functions.
+    *Creatively design QAirlineâ€™s unique brand identity.
+    *Just develop the interface of this website using HTML, CSS(not *include backend).
+Please create a landing page to introduce the website .
+
+REMEMBER THAT:
+    I need the design layout of the website to be similar to the current airline websites.
+    You have to just use html and css. You can use internet and find some suitable boostrap or tailwind from the Internet.
+    This Web need the logo and background image
+    CSS need to responsive and dynamic.
+    I need the header and footer beautiful.
+    The main color is blue and have summer vibes.
+    You must implement all the features above.
+    After generate code,you need to save the code and all resource to this folder: Qairline
+
+------
+Here's a compilation of resources to help you develop a UI website for an airline, using current design trends, and Bootstrap or Tailwind, along with tools for creating a logo:
+
+### Current Airline Website Designs
+1. [Hottest Design Airlines to Try in 2023](https://thedesignair.net/2023/01/29/hottest-design-airlines-to-try-in-2023/)
+2. [Inspirational Airlines Websites](https://fireart.studio/blog/8-examples-of-inspirational-airlines-websites/)
+3. [Eye-Catching Airline Website Designs](https://smileycat.com/11-eye-catching-airline-website-designs/)
+4. [Web Designs of the World's Biggest Airlines](https://99designs.com/blog/creative-inspiration/web-designs-of-the-worlds-biggest-airlines/)
+
+### Bootstrap Templates for Airline Websites
+1. [A-world - Free Bootstrap 5 Template for Travel Agencies](https://themewagon.com/themes/a-world/)
+2. [Sterial - Free Bootstrap 5 Template](https://untree.co/free-templates/sterial-free-bootstrap-5-template-for-travel-agency-websites/)
+3. [ThemeForest Bootstrap Flight Templates](https://themeforest.net/search/bootstrap%20flight%20template)
+4. [Bootstrap Airline Reservation Template](https://mobirise.com/bootstrap-template/flight-booking-template.html)
+
+### Tailwind CSS Templates for Airline Websites
+1. [Travel Agency HTML5 Tailwind CSS Template on Dribbble](https://dribbble.com/shots/24595418-Travel-Website-Template-Responsive-Traveling-Website-Theme)
+2. [Travosy - Travel & Tourism Tailwind CSS Template](https://themeforest.net/search/travel%20tailwind/)
+3. [Tailwind CSS Travel Booking Project on GitHub](https://github.com/tangoren/tailwind-css-travel-booking)
+4. [Travel Portal Tailwind CSS Template](https://time2hack.github.io/free-tailwind-templates/landing-pages/travel-portal-01/)
+
+### Airline Logo Generators
+1. [My Free Logo Maker - Airline Logo Ideas](https://myfreelogomaker.com/logo-ideas/airline-logo/)
+2. [BrandCrowd Airline Logo Maker](https://www.brandcrowd.com/maker/tag/airline?srsltid=AfmBOopUvt9JGx1QpG-Bs2zzi0-_nsiWfwxHzBTAvZ74wGSbe8i6y7lC)
+3. [DesignEvo Airline Logo Maker](https://www.designevo.com/create/logos/airline.html)
+4. [FreeLogoDesign - Airlines Logo Ideas](https://www.freelogodesign.org/logo-ideas/airlines)
+
+These resources will help you create the frontend of your airline website with a modern, responsive design using Bootstrap or Tailwind CSS. Additionally, you can generate a professional logo to establish the unique brand identity of QAirline.
+------
+The images for your airline website have been successfully saved.
+
+- **Logo:** Saved as `qairline_logo.jpg` in the `Qairline` folder.
+- **Background Image:** Saved as `qairline_background.jpg` in the `Qairline` folder.
+
+Now, you have the necessary resources to start building your website's landing page. Let me know if you need further assistance!
+------
+The landing page code for the QAirline website has been successfully created and saved in the "Qairline" folder as `index.html`. The provided logo and background image are integrated into the design. If you need further features or adjustments, feel free to let me know!
+------

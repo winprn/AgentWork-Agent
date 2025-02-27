@@ -59,8 +59,11 @@ def save_imgs(
     root_folder:Annotated[str,"the root folder of project"]
 ):
     """
-    Use this function to save image that generated from url in the specific path.
+    Use this function to save image that generated from url in the specific path in jpg format.
     """
+    extension = ['.jpg','.png']
+    if image_name[-4:] not in extension:
+        return "Image have to save in .jpg or .png format, save image again"
     file_name = os.path.join(root_folder,image_name)
     response = requests.get(url, stream=True)
     if response.status_code == 200:
@@ -118,7 +121,8 @@ def search_and_extract(
                     I just need you return for 3 latest articles.
                     You should read the name and decide that it is the name of article or not. If not, do not extract.
                     You have to return the information in json type, DO NOT return anything else.
-                    The keys of json are: 'href','date_posted'
+                    The keys of json are: 'href','date_posted'.
+                    Remind that the href need to concate with base url to make the complete url
                     Here is the text I need you extract:
                     {final_text}
                     """

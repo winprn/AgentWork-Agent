@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(-1,r"..\..\*")
+sys.path.insert(-1,r"..\..\AgentWork-Agent")
 
 from AgentsHub.Supervisor import *
 from AgentsHub.Crawl_news_agent import *
@@ -42,10 +42,11 @@ def create_report_team():
     return super_graph
 
 if __name__=="__main__":
-    request = """
-    This url links to a block that contains many artiles. I need you crawl and summary the information from latest articles of that site.
-    After that, summary and write for me a post and save it in the path:'Report'.
-    This is the url: https://blog.injective.com/
-    """
+    with open("Request.txt","r") as file:
+        request = file.read()
+    # request = "hello."
     graph = create_report_team()
-    print(graph.make_request(request,stream = False))
+    # print(graph.make_request(request,stream = False,save_progress="Progress.txt"))
+    a = graph.make_request(request,stream = True,save_progress="Progress.txt")
+    breakpoint()
+    

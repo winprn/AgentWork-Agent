@@ -23,6 +23,7 @@ def create_software_team():
                     for Dev to code web. You have to just return the image url. After that, you save the image 
                     in the specific path with extension name is jpg and provide the path for developer by using save_imgs function.
                     You need to provide exactly path to the images for Developer.
+                    You need to save in jpg format with .jpg extension.
                     """,
                     tools = [gen_imgs,save_imgs],
                     llm = llm)
@@ -52,7 +53,8 @@ def create_software_team():
     return super_graph
 
 if __name__=="__main__":
-    with open("request.txt","r") as file:
+    with open("Request.txt","r") as file:
         request = file.read()
     graph = create_software_team()
-    print(graph.make_request(request,stream = False))
+    print(graph.make_request(request,stream = False,save_progress="Progress.txt"))
+    # print(graph.graph.get_state())

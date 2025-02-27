@@ -116,19 +116,44 @@ class Supervise_graph():
         graph = builder.compile()
         return graph
     
-    def make_request(self,request,stream=False):
+    def make_request(self,request,stream=False,save_progress = None):
+        progress = []
         if stream==True:
             for s in self.graph.stream(
                 {"messages": [("user", 
                             request)]}, subgraphs=True
                 ):
+                progress.append(s)
                 print(s)
                 print("----")
         else:
             a = self.graph.invoke({"messages": [("user", 
                             request)]}, subgraphs=True
             )
+            if save_progress is not None:
+                for sub in a:
+                    if len(sub)>0:
+                        messages = sub["messages"]
+                        for mess in messages:
+                            content = mess.content
+                            with open(save_progress,"a",encoding='utf8') as file:
+                                file.write(content+"\n"+"------"+"\n")
             return a
+        if save_progress is not None:
+            for s in progress:
+                breakpoint()
+                if len(s) == 0:
+                    continue
+                for sub in s:
+                    if len(sub)>0:
+                        messages = sub["messages"]
+                        for mess in messages:
+                            content = mess.content
+                            with open(save_progress,"w",econding='utf8') as file:
+                                file.write(content+"\n"+"----------"+"\n")
+            return "-------\n".join(progress)
+        
+        
 
 
 if __name__=="__main__":
@@ -152,6 +177,8 @@ if __name__=="__main__":
     This is the url: https://blog.injective.com/
     """
     super_graph.make_request(request,stream=False)  
+    
+    
     
     
     

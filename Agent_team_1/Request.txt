@@ -15,13 +15,15 @@ Admin Features
 NOTES
     *Refer to airline websites to better understand business functions.
     *Creatively design QAirline’s unique brand identity.
-    *Just develop the interface of this website using HTML, CSS or other framework like React … (not *include backend).
+    *Just develop the interface of this website using HTML, CSS(not *include backend).
 Please create a landing page to introduce the website .
 
 REMEMBER THAT:
-    You just use html and css. You can use internet and find some suitable boostrap or tailwind.
+    I need the design layout of the website to be similar to the current airline websites.
+    You have to just use html and css. You can use internet and find some suitable boostrap or tailwind from the Internet.
     This Web need the logo and background image
-    CSS need to responsive and dynamic
+    CSS need to responsive and dynamic.
+    I need the header and footer beautiful.
     The main color is blue and have summer vibes.
     You must implement all the features above.
     After generate code,you need to save the code and all resource to this folder: Qairline
