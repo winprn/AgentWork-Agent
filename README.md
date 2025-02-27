@@ -14,7 +14,7 @@ To install the project, clone the repository and install the required dependenci
 
 ```bash
 git clone https://github.com/yourusername/supervisor-graph-agents.git
-cd supervisor-graph-agents
+cd AgentWork-Agent
 pip install -r requirements.txt
 ```
 
