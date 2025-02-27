@@ -1,7 +1,7 @@
 import os
 import asyncio
 import sys
-sys.path.insert(-1,r"..\..\Agents")
+sys.path.insert(-1,r"..\..\AgentWork-Agent")
 from dotenv import load_dotenv
 import requests
 load_dotenv()
@@ -64,6 +64,7 @@ def save_imgs(
     file_name = os.path.join(root_folder,image_name)
     response = requests.get(url, stream=True)
     if response.status_code == 200:
+        os.makedirs(root_folder,exist_ok=True)
         with open(file_name, 'wb') as file:
             for chunk in response.iter_content(1024):
                 file.write(chunk)
