@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import sys
 sys.path.insert(-1,r"..\..\*")
 from Agent_team_2.WriteReport import *
@@ -11,6 +12,7 @@ class body(BaseModel):
     request:str
 
 app = FastAPI()
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 graph_team_2 = create_report_team()
 graph_team_1 = create_software_team()
