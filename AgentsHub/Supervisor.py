@@ -171,7 +171,7 @@ class Supervise_graph():
 
 
 if __name__=="__main__":
-    DB_URI = "postgres://postgres:123456@0.0.0.0:5432/postgres"
+    DB_URI = "postgres://postgres:123456@140.245.117.232:5432/postgres"
     connection_kwargs = {
         "autocommit": True,
         "prepare_threshold": 0,
