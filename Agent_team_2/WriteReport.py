@@ -19,6 +19,7 @@ pool =  ConnectionPool(
     kwargs=connection_kwargs,
 )
 checkpointer = PostgresSaver(pool)
+checkpointer.setup()
 
 def create_report_team(id_thread = "test"):
     llm = ChatOpenAI(model = "gpt-4o-mini")
