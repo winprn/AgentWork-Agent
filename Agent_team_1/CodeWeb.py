@@ -7,7 +7,7 @@ from langchain_openai import ChatOpenAI
 from langchain_community.tools.tavily_search import TavilySearchResults
 
 
-DB_URI = "postgresql://postgres:123456@0.0.0.0:5432/postgres"
+DB_URI = "postgres://postgres:123456@0.0.0.0:5432/postgres"
 connection_kwargs = {
     "autocommit": True,
     "prepare_threshold": 0,
