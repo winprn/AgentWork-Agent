@@ -8,7 +8,7 @@ from langgraph.types import Command
 from langchain_core.messages import HumanMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import create_react_agent
-from langgraph.checkpoint.memory import MemorySaver 
+from langgraph.checkpoint.memory import MemorySaver
 from langgraph.checkpoint.postgres import PostgresSaver
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 # from Crawl_news_agent import *
@@ -31,10 +31,10 @@ class Agent:
         self.llm = llm
         self.checkpointer = checkpointer
         self.id_thread = id_thread
-        
+
         self.agent = self.create()
         self.agent_node = self.node()
-    
+
     def create(self):
         agent = create_react_agent(self.llm,
                                    tools = self.tools,
@@ -42,7 +42,7 @@ class Agent:
                                    name = self.name,
                                    checkpointer=self.checkpointer)
         return agent
-    
+
     def node(self):
         agent = self.agent
         name = self.name
@@ -51,7 +51,7 @@ class Agent:
                 result = agent.invoke(state,{"configurable": {"thread_id": self.id_thread}})
             else:
                 result = agent.invoke(state)
-                
+
             # print("this is history",result)
             return Command(
             update={
@@ -66,16 +66,16 @@ class Agent:
 
 class Supervise_graph():
 
-    def __init__(self,llm = ChatOpenAI(model = "gpt-4o"), 
+    def __init__(self,llm = ChatOpenAI(model = "gpt-4o"),
                  members = [],
-                 member_nodes = [], 
-                 job_description ="", 
+                 member_nodes = [],
+                 job_description ="",
                  prompt = ""):
         self.members = [member.agent for member in members if  isinstance(member,Agent) ]
         self.member_names = [member.name for member in members if  isinstance(member,Agent)]
         self.member_nodes = member_nodes
         self.job_description = job_description
-        
+
         self.options = members+["FINISH"]
         self.llm = llm
         default_promt = (
@@ -89,17 +89,17 @@ class Supervise_graph():
         else:
             self.prompt = prompt
         # print(self.prompt)
-            
+
         # self.Router.__annotations__["next"] = Literal[*self.options]
-        
+
         self.main_node = self.node()
         self.graph = self.build_graph()
-        
+
 
     def get_member_names(self):
         return self.member_names
-    
-    
+
+
     def node(self):
         class Router(TypedDict):
             """Worker to route to next. If no workers needed, route to FINISH."""
@@ -117,9 +117,9 @@ class Supervise_graph():
             if goto == "FINISH":
                 goto = END
 
-            return Command(goto=goto, update={"next": goto})   
+            return Command(goto=goto, update={"next": goto})
         return supervisor_node
-    
+
     def build_graph(self):
         # print(type(self.main_node))
         builder = StateGraph(State)
@@ -129,19 +129,19 @@ class Supervise_graph():
             builder.add_node(self.member_names[i],self.member_nodes[i])
         graph = builder.compile()
         return graph
-    
+
     def make_request(self,request,stream=False,save_progress = None):
         progress = []
         if stream==True:
             for s in self.graph.stream(
-                {"messages": [("user", 
+                {"messages": [("user",
                             request)]}, subgraphs=True
                 ):
                 progress.append(s)
                 print(s)
                 print("----")
         else:
-            a = self.graph.invoke({"messages": [("user", 
+            a = self.graph.invoke({"messages": [("user",
                             request)]}, subgraphs=True
             )
             if save_progress is not None:
@@ -166,12 +166,12 @@ class Supervise_graph():
                             with open(save_progress,"w",econding='utf8') as file:
                                 file.write(content+"\n"+"----------"+"\n")
             return "-------\n".join(progress)
-        
-        
+
+
 
 
 if __name__=="__main__":
-    DB_URI = "postgresql://postgres:123456@localhost:5432/postgres"
+    DB_URI = "postgresql://postgres:123456@0.0.0.0:5432/postgres"
     connection_kwargs = {
         "autocommit": True,
         "prepare_threshold": 0,
@@ -181,7 +181,7 @@ if __name__=="__main__":
         conninfo=DB_URI,
         max_size=40,
         kwargs=connection_kwargs,
-    ) 
+    )
     checkpointer = PostgresSaver(pool)
 
     # NOTE: you need to call .setup() the first time you're using your checkpointer
@@ -203,17 +203,8 @@ if __name__=="__main__":
                                   member_nodes=[a.agent_node for a in agents],
                                   )
     # print(super_graph.prompt)
-    
+
     request = """
-    Hello, I want you to crawl that url again 
+    Hello, I want you to crawl that url again
     """
     print(super_graph.make_request(request,stream=False))
-    
-    
-    
-    
-    
-    
-    
-    
-    

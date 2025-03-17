@@ -7,7 +7,7 @@ from langchain_openai import ChatOpenAI
 from psycopg_pool import ConnectionPool
 from langgraph.checkpoint.postgres import PostgresSaver
 
-DB_URI = "postgresql://postgres:123456@localhost:5432/postgres"
+DB_URI = "postgresql://postgres:123456@0.0.0.0:5432/postgres"
 connection_kwargs = {
     "autocommit": True,
     "prepare_threshold": 0,
@@ -17,7 +17,7 @@ pool =  ConnectionPool(
     conninfo=DB_URI,
     max_size=40,
     kwargs=connection_kwargs,
-) 
+)
 checkpointer = PostgresSaver(pool)
 
 def create_report_team(id_thread = "test"):
@@ -25,17 +25,17 @@ def create_report_team(id_thread = "test"):
     crawler = Agent(name="Crawler",
                     description="",
                     prompts="""Your are a researcher,use some tools to search and crawl some useful information.
-                    if the result return the href, it is just the href that link to the main article. 
+                    if the result return the href, it is just the href that link to the main article.
                     Then you need to use 'extract' function to get the whole content of the article.
-                    I need the out should contain the main content of the news and the url to that article 
+                    I need the out should contain the main content of the news and the url to that article
                     """,
                     tools = [search_and_extract,extract],
                     llm = llm, checkpointer=checkpointer,
                     id_thread=id_thread)
-    
+
     Content_creator = Agent(name="Content_creator",
                      description="",
-                     prompts = "You are a Content creater. According to the content that was extracted," 
+                     prompts = "You are a Content creater. According to the content that was extracted,"
                      "write for me an esssay about the main content of all the news. "
                      "Write it as a post to facebook, twitter, .... With each news, I need you provide the link that link to that news."
                      "Then, save that post to my computer",
@@ -50,7 +50,7 @@ def create_report_team(id_thread = "test"):
                llm=llm,
                checkpointer=checkpointer,
                id_thread=id_thread)
-    
+
     project_manager = Agent(name="Project_manager",
                description="",
                tools=[],
@@ -60,15 +60,15 @@ def create_report_team(id_thread = "test"):
                llm=llm,
                checkpointer=checkpointer,
                id_thread=id_thread)
-    
-    
+
+
     agents = [crawler,Content_creator,reader,project_manager]
-    
+
     super_graph = Supervise_graph(llm=llm,
                                   members = agents,
                                   member_nodes=[a.agent_node for a in agents],
                                   )
-    
+
     return super_graph
 
 if __name__=="__main__":
@@ -80,4 +80,3 @@ if __name__=="__main__":
     a = graph.make_request("Tôi vừa nhờ bạn làm gì ấy nhỉ",stream = False,save_progress=None)
     print(a)
     # breakpoint()
-    
