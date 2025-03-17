@@ -5,7 +5,22 @@ from AgentsHub.Supervisor import *
 from AgentsHub.Crawl_news_agent import *
 from langchain_openai import ChatOpenAI
 from langchain_community.tools.tavily_search import TavilySearchResults
-def create_software_team():
+
+
+DB_URI = "postgresql://postgres:123456@localhost:5432/postgres"
+connection_kwargs = {
+    "autocommit": True,
+    "prepare_threshold": 0,
+}
+pool =  ConnectionPool(
+    # Example configuration
+    conninfo=DB_URI,
+    max_size=40,
+    kwargs=connection_kwargs,
+) 
+checkpointer = PostgresSaver(pool)
+
+def create_software_team(id_thread = "test2"):
     llm = ChatOpenAI(model = "gpt-4o")
     toolsearch  = TavilySearchResults(max_results=5)
     
@@ -15,7 +30,9 @@ def create_software_team():
                     for Dev to code web.
                     """,
                     tools = [toolsearch],
-                    llm = llm)
+                    llm = llm,
+                    checkpointer=checkpointer,
+                    id_thread=id_thread)
     
     Design_images = Agent(name="Design_images",
                     description="",
@@ -26,7 +43,9 @@ def create_software_team():
                     You need to save in jpg format with .jpg extension.
                     """,
                     tools = [gen_imgs,save_imgs],
-                    llm = llm)
+                    llm = llm,
+                    checkpointer=checkpointer,
+                    id_thread=id_thread)
     
     Dev = Agent(name="Developer",
                     description="",
@@ -38,12 +57,22 @@ def create_software_team():
                     You just only return code. Save code(donot ask anything to user).
                     """,
                     tools = [save_code,find_image_path],
-                    llm = llm)
+                    llm = llm,
+                    checkpointer=checkpointer,
+                    id_thread=id_thread)
     
     
+    project_manager = Agent(name="Project_manager",
+               description="",
+               tools=[],
+               prompts="You are a project manager, Your responsible is communicate with custom"
+                        "You will get the information of progress of task"
+                        "You need to answer the question of custom about the task",
+               llm=llm,
+               checkpointer=checkpointer,
+               id_thread=id_thread)
     
-    
-    agents = [Dev,Researcher,Design_images]
+    agents = [Dev,Researcher,Design_images,project_manager]
     
     super_graph = Supervise_graph(llm=llm,
                                   members = agents,
@@ -56,5 +85,5 @@ if __name__=="__main__":
     with open("Request.txt","r") as file:
         request = file.read()
     graph = create_software_team()
-    print(graph.make_request(request,stream = False,save_progress="Progress.txt"))
+    print(graph.make_request("Gen lại cho tôi  ảnh logo khác đi",stream = False,save_progress="Progress.txt"))
     # print(graph.graph.get_state())
