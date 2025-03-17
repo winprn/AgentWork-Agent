@@ -29,6 +29,7 @@ uvicorn agent_server:app
 It will run on localhost.
 
 If you want to run Demo1, make POST with body like this:
+
 ```
 requests.post("http://127.0.0.1:8000/invoke",body={"id":"1", "request":"Your request"})
 ```
@@ -36,7 +37,8 @@ requests.post("http://127.0.0.1:8000/invoke",body={"id":"1", "request":"Your req
 ```
 {
 "id":"1",
-"request":"Your request"
+"request":"Your request",
+"id_thread":"Specific ID for that job"
 }
 ```
 
@@ -45,7 +47,8 @@ If you want to run Demo2:
 ```
 {
 "id":"2",
-"request":"Your request"
+"request":"Your request",
+"id_thread":"Specific ID for that job"
 }
 ```
 

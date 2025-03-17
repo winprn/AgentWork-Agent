@@ -8,20 +8,29 @@ from langgraph.types import Command
 from langchain_core.messages import HumanMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import create_react_agent
+from langgraph.checkpoint.memory import MemorySaver 
+from langgraph.checkpoint.postgres import PostgresSaver
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 # from Crawl_news_agent import *
+
+
+from psycopg_pool import ConnectionPool
+
 
 
 class State(MessagesState):
     next: str
 
 class Agent:
-    def __init__(self,name,description,tools,prompts,llm):
+    def __init__(self,name,description,tools,prompts,llm,checkpointer=None,id_thread = "0"):
 
         self.name = name
         self.description = description
         self.tools = tools
         self.prompts = prompts
         self.llm = llm
+        self.checkpointer = checkpointer
+        self.id_thread = id_thread
         
         self.agent = self.create()
         self.agent_node = self.node()
@@ -30,14 +39,20 @@ class Agent:
         agent = create_react_agent(self.llm,
                                    tools = self.tools,
                                    prompt = self.prompts,
-                                   name = self.name)
+                                   name = self.name,
+                                   checkpointer=self.checkpointer)
         return agent
     
     def node(self):
         agent = self.agent
         name = self.name
         def agent_node(state: State) -> Command[Literal["supervisor"]]:
-            result = agent.invoke(state)
+            if self.checkpointer is not None:
+                result = agent.invoke(state,{"configurable": {"thread_id": self.id_thread}})
+            else:
+                result = agent.invoke(state)
+                
+            # print("this is history",result)
             return Command(
             update={
                 "messages": [
@@ -68,7 +83,6 @@ class Supervise_graph():
     f" following workers: {self.member_names}. Given the following user request,"
     " respond with the worker to act next. Each worker will perform a"
     " task and respond with their results and status."
-    "if the input do not contain any tasks, you can response to user and finish"
 )
         if prompt is None or len(prompt) == 0:
             self.prompt = default_promt
@@ -96,9 +110,9 @@ class Supervise_graph():
             messages = [
                 {"role": "system", "content": self.prompt},
             ] + state["messages"]
-            print(messages)
+            # print("this is message",messages)
             response = self.llm.with_structured_output(Router).invoke(messages)
-            print(response)
+            # print(response)
             goto = response["next"]
             if goto == "FINISH":
                 goto = END
@@ -107,7 +121,7 @@ class Supervise_graph():
         return supervisor_node
     
     def build_graph(self):
-        print(type(self.main_node))
+        # print(type(self.main_node))
         builder = StateGraph(State)
         builder.add_edge(START, "supervisor")
         builder.add_node("supervisor", self.main_node)
@@ -157,26 +171,43 @@ class Supervise_graph():
 
 
 if __name__=="__main__":
+    DB_URI = "postgresql://postgres:123456@localhost:5432/postgres"
+    connection_kwargs = {
+        "autocommit": True,
+        "prepare_threshold": 0,
+    }
+    pool =  ConnectionPool(
+        # Example configuration
+        conninfo=DB_URI,
+        max_size=40,
+        kwargs=connection_kwargs,
+    ) 
+    checkpointer = PostgresSaver(pool)
+
+    # NOTE: you need to call .setup() the first time you're using your checkpointer
+# checkpointer.setup()
     llm = ChatOpenAI(model = "gpt-4o-mini")
-    a1 = Agent(name="crawler",description="",tools=[],prompts="You are an researcher, use some tools to search and crawl some useful information",llm=llm)
-    a2 = Agent(name="Content creater",description="",tools=[],prompts="You are a Content creater. According to the content that was extracted, write for me a post that summary all the news. Then, save that post to my computer",llm=llm)
-    a3 = Agent(name="reader",description="",tools=[],prompts="You are a reader, read the content in a specifice url and summary it.",llm=llm)
-    agents = [a1,a2,a3]
+    a1 = Agent(name="crawler",description="",tools=[],prompts="You are an researcher, use some tools to search and crawl some useful information",llm=llm,checkpointer=checkpointer)
+    a2 = Agent(name="Content_creater",description="",tools=[],prompts="You are a Content creater. According to the content that was extracted, write for me a post that summary all the news. Then, save that post to my computer",llm=llm,checkpointer=checkpointer)
+    a3 = Agent(name="reader",description="",tools=[],prompts="You are a reader, read the content in a specifice url and summary it.",llm=llm,checkpointer=checkpointer)
+    person = Agent(name="Historier",
+                   description="",
+                   tools = [],
+                   prompts = "You can know the history chat between user and this system,"
+                        "You need to summary the history chat and give the information for supervisor."
+                        "Do not do any task in user requirement, just provide information about history chat",
+                   llm=llm,checkpointer=checkpointer)
+    agents = [a1,a2,a3,person]
     super_graph = Supervise_graph(llm=llm,
                                   members = agents,
                                   member_nodes=[a.agent_node for a in agents],
                                   )
     # print(super_graph.prompt)
     
-    for i in range(3):
-        print(type(super_graph.member_nodes[i]))
     request = """
-    This url links to a block that contains many artiles. I need you crawl and summary the information from latest articles of that site.
-    After that, summary and write for me a report. You need to crawll all the href first, then visit them to find the information.
-    after that, save the summary to my computer
-    This is the url: https://blog.injective.com/
+    Hello, I want you to crawl that url again 
     """
-    super_graph.make_request(request,stream=False)  
+    print(super_graph.make_request(request,stream=False))
     
     
     
